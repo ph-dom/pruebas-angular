@@ -1,0 +1,107 @@
+<form [formGroup]="cartesianPlane" (submit)="handleSubmitShapes()">
+    <div>
+        <label for="svg-gridColor">Grid Color</label>
+        <input id="svg-gridColor" formControlName="gridColor" />
+    </div>
+    <button (click)="addShape();" type="button" >Agregar Figura</button>
+    <hr />
+    <ng-container *ngFor="let shapeForm of getShapesForms; let i = index;">
+        <div [formGroup]="shapeForm">
+            <div>
+                <label for="shape-type">Type</label>
+                <select id="shape-type" formControlName="type" (change)="handleChangeShapeType($event, i)">
+                    <option value="rect">rect</option>
+                    <option value="ellipse">ellipse</option>
+                    <option value="polygon">polygon</option>
+                </select>
+            </div>
+            <ng-container *ngIf="getShapeType(i) == 'rect'">
+                <div>
+                    <label for="shape-x">X</label>
+                    <input id="shape-x" type="number" formControlName="x" />
+                </div>
+                <div>
+                    <label for="shape-y">Y</label>
+                    <input id="shape-y" type="number" formControlName="y" />
+                </div>
+                <div>
+                    <label for="shape-height">Height</label>
+                    <input id="shape-height" type="number" formControlName="height" />
+                </div>
+                <div>
+                    <label for="shape-width">Width</label>
+                    <input id="shape-width" type="number" formControlName="width" />
+                </div>
+            </ng-container>
+            <ng-container *ngIf="getShapeType(i) == 'ellipse'">
+                <div>
+                    <label for="shape-cx">X</label>
+                    <input id="shape-cx" type="number" formControlName="cx" />
+                </div>
+                <div>
+                    <label for="shape-cy">Y</label>
+                    <input id="shape-cy" type="number" formControlName="cy" />
+                </div>
+                <div>
+                    <label for="shape-rx">RX</label>
+                    <input id="shape-rx" type="number" formControlName="rx" />
+                </div>
+                <div>
+                    <label for="shape-ry">RY</label>
+                    <input id="shape-ry" type="number" formControlName="ry" />
+                </div>
+            </ng-container>
+            <ng-container *ngIf="getShapeType(i) == 'polygon'">
+                <div>
+                    <label for="shape-points">Points</label>
+                    <input id="shape-points" formControlName="points" />
+                </div>
+            </ng-container>
+            <div>
+                <label for="shape-fill">Fill</label>
+                <input id="shape-fill" formControlName="fill" />
+            </div>
+            <div>
+                <label for="shape-stroke">Stroke</label>
+                <input id="shape-stroke" formControlName="stroke" />
+            </div>
+            <button (click)="removeShape(i);" type="button" >Eliminar</button>
+            <hr />
+        </div>
+    </ng-container>
+    <input type="submit" value="Generar" />
+</form>
+
+<ng-container *ngIf="data != null">
+    <svg height="360" width="360" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <pattern id="grid" patternUnits="userSpaceOnUse" width="10" height="10">
+                <rect x="0" y="0" height="10" width="10" fill="none" [attr.stroke]="data.gridColor" stroke-opacity="0.6" />
+            </pattern>
+        </defs>
+        <rect x="0" y="0" width="100" height="100" fill="url(#grid)" />
+        <g *ngFor="let shape of data.shapes;let i = index;">
+            <rect *ngIf="shape.type === 'rect'"
+                [attr.x]="convertSvgXToPlane(shape.x) - (convertSvgXToPlane(shape.width)/2)"
+                [attr.y]="convertSvgYToPlane(shape.y) - (convertSvgAbsoluteToPlane(shape.height)/2)"
+                [attr.width]="convertSvgXToPlane(shape.width)"
+                [attr.height]="convertSvgAbsoluteToPlane(shape.height)"
+                [attr.stroke]="shape.stroke"
+                [attr.fill]="shape.fill"
+            />
+            <ellipse *ngIf="shape.type === 'ellipse'"
+                [attr.cx]="convertSvgXToPlane(shape.cx)"
+                [attr.cy]="convertSvgYToPlane(shape.cy)"
+                [attr.rx]="convertSvgXToPlane(shape.rx)"
+                [attr.ry]="convertSvgAbsoluteToPlane(shape.ry)"
+                [attr.stroke]="shape.stroke"
+                [attr.fill]="shape.fill"
+            />
+            <polygon *ngIf="shape.type === 'polygon'"
+                [attr.points]="stringPointsToPlane(shape.points)"
+                [attr.stroke]="shape.stroke"
+                [attr.fill]="shape.fill"
+            />
+        </g>
+    </svg>
+</ng-container>
