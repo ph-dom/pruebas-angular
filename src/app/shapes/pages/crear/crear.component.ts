@@ -34,11 +34,12 @@ type Polygon = {
 }
 
 @Component({
-  selector: 'app-forms',
-  templateUrl: './forms.component.html',
-  styleUrls: ['./forms.component.scss']
+  selector: 'app-crear',
+  templateUrl: './crear.component.html',
+  styleUrls: ['./crear.component.scss']
 })
-export class FormsComponent implements OnInit {
+export class CrearComponent implements OnInit {
+  
   cartesianPlane = new FormGroup({
     gridColor: new FormControl(),
     shapes: new FormArray<FormGroup>([])
@@ -144,4 +145,5 @@ export class FormsComponent implements OnInit {
       return [x,y].join(',');
     }).join(' ');
   }
+
 }
